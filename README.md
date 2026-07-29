@@ -112,7 +112,9 @@ excluded_claims: [生产吞吐, 端到端延迟, 安全审计结论, ROI]
 | 研究协作 | 文献矩阵、AI 三级信任、反向测试、边界审计 |
 | 文档表达 | Markdown、YAML、draw.io、SVG、Mermaid |
 
-## 安装与阅读
+## 安装与部署
+
+### 安装与运行
 
 ```bash
 git clone https://github.com/ChrysFu-FndVent/privacy-traceability-research.git
@@ -135,6 +137,12 @@ python3 src/integrity_demo.py --self-test
 5. 参考 [prompt-engineering.md](./prompt-engineering.md) 管理 AI 辅助科研的证据等级。
 
 如需复现实验，应根据模块规格在独立环境重建代码、固定依赖版本并补充安全评审；不要把文档中的模块名当成已发布脚本路径。
+
+### 部署边界
+
+当前仓库不需要也不支持部署为区块链节点、验证服务或消费者验真接口。`integrity_demo.py` 适合在本地、教学或 CI 环境执行，用于验证哈希链篡改检测这一项基础行为。
+
+生产部署需要独立实现成员与密钥管理、签名、Merkle、隐私证明、共识、存储、接口、监控和治理，并在上线前完成密码学复核、威胁建模与安全审计。
 
 ## 项目结构
 
@@ -178,6 +186,12 @@ privacy-traceability-research/
 <summary><strong>可以将这里的密码学方案直接投入生产吗？</strong></summary>
 
 不可以。生产实现需要密码学专家复核、安全审计、密钥生命周期设计、依赖审查、攻击测试和治理方案。
+</details>
+
+<details>
+<summary><strong>可以把参考演示部署成消费者验真服务吗？</strong></summary>
+
+不可以。参考演示没有身份认证、持久化、网络接口、多方签名或隐私证明能力，只能在单进程内构造并检查示例哈希链。验真服务必须另行实现并接受安全评审。
 </details>
 
 ## 证据与安全边界

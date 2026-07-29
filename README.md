@@ -2,6 +2,10 @@
 
 <div align="center">
 
+<strong>🔐 验证事实，不暴露不该公开的原始值</strong>
+
+<br>
+
 `trust model` · `dual-chain architecture` · `privacy proof` · `evidence boundary`
 
 ![Type](https://img.shields.io/badge/Type-Research%20Toolkit-1D4ED8?style=flat-square)
@@ -9,7 +13,15 @@
 ![Security](https://img.shields.io/badge/Security-Not%20Audited-B91C1C?style=flat-square)
 ![Disclosure](https://img.shields.io/badge/Disclosure-Boundaries%20Explicit-0F766E?style=flat-square)
 
-[研究流程](./workflows.md) · [实验模块](./skills.md) · [科研 Prompt](./prompt-engineering.md) · [产品化设计](./product-design.md) · [数据与限制](./data-analysis.md)
+📚 [研究流程](./workflows.md) · 🧪 [实验模块](./skills.md) · 🧠 [科研 Prompt](./prompt-engineering.md) · 🧭 [产品化设计](./product-design.md) · 📏 [数据与限制](./data-analysis.md)
+
+<br>
+
+<img src="./assets/readme-hero.webp" alt="公开溯源链与隐私数据通道通过证明节点连接到验证网关的研究架构概念图" width="760">
+
+<br>
+
+<sub>研究架构概念图：用于解释公开记录、隐私数据与证明节点的关系，不是安全审计结论。</sub>
 
 </div>
 

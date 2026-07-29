@@ -12,13 +12,14 @@
 ![Prototype](https://img.shields.io/badge/Evidence-Single--Machine%20Prototype-7C3AED?style=flat-square)
 ![Security](https://img.shields.io/badge/Security-Not%20Audited-B91C1C?style=flat-square)
 ![Disclosure](https://img.shields.io/badge/Disclosure-Boundaries%20Explicit-0F766E?style=flat-square)
+![Language](https://img.shields.io/badge/Language-Python%203-3776AB?style=flat-square&logo=python&logoColor=white)
 
 📚 [研究流程](./workflows.md) · 🧪 [实验模块](./skills.md) · 🧠 [科研 Prompt](./prompt-engineering.md) · 🧭 [产品化设计](./product-design.md) · 📏 [数据与限制](./data-analysis.md)
 
 </div>
 
 > [!WARNING]
-> 本仓库发布的是**研究方法、实验模块规格和结果记录**，不是经过安全审计的区块链或零知识证明实现。仓库不包含论文实验的 Python 源码，不能直接运行或用于生产。
+> 本仓库发布的是**研究方法、实验模块规格和结果记录**，不是经过安全审计的区块链或零知识证明实现。`src/integrity_demo.py` 是独立编写的哈希链完整性参考演示，不是论文实验源码，不能用于生产或复现论文性能数据。
 
 ## 研究简介
 
@@ -107,6 +108,7 @@ excluded_claims: [生产吞吐, 端到端延迟, 安全审计结论, ROI]
 | 隐私证明 | Commitment、范围证明、零知识思想 |
 | 业务约束 | 智能合约状态机、RBAC 权限 |
 | 原型环境 | Python 单机实验（源码未在本仓库发布） |
+| 公开参考实现 | Python 3 标准库；规范化 JSON、哈希链构造与篡改检测 |
 | 研究协作 | 文献矩阵、AI 三级信任、反向测试、边界审计 |
 | 文档表达 | Markdown、YAML、draw.io、SVG、Mermaid |
 
@@ -117,7 +119,14 @@ git clone https://github.com/ChrysFu-FndVent/privacy-traceability-research.git
 cd privacy-traceability-research
 ```
 
-本仓库无需安装依赖，推荐按研究问题而非文件名顺序阅读：
+文档无需安装依赖。运行独立参考演示需要 Python 3.9 或更高版本，不依赖第三方包：
+
+```bash
+python3 src/integrity_demo.py
+python3 src/integrity_demo.py --self-test
+```
+
+该演示只说明“记录被修改后哈希链验证会失败”，不实现签名、Merkle、零知识证明、共识或网络。研究文档推荐按问题而非文件名顺序阅读：
 
 1. 从 [workflows.md](./workflows.md) 形式化信任、完整性、隐私和效率问题。
 2. 用 [product-design.md](./product-design.md) 查看 8 状态生命周期、7 类权限和 5 个接口。
@@ -132,9 +141,12 @@ cd privacy-traceability-research
 ```text
 privacy-traceability-research/
 ├── README.md              # 研究入口、证据边界与 FAQ
+├── .gitignore             # Python 缓存忽略规则
 ├── assets/
 │   ├── readme-architecture.drawio  # 可编辑双层架构源文件
 │   └── readme-architecture.svg     # README 矢量展示图
+├── src/
+│   └── integrity_demo.py   # Python 哈希链完整性参考演示
 ├── workflows.md           # 从业务痛点到可验证结论的研究流程
 ├── skills.md              # 六个 Python 实验模块的规格拆解
 ├── prompt-engineering.md  # AI 辅助科研的 Prompt 与信任分级
@@ -145,9 +157,9 @@ privacy-traceability-research/
 ## FAQ
 
 <details>
-<summary><strong>为什么仓库里没有 <code>.py</code> 文件？</strong></summary>
+<summary><strong>公开的 Python 文件是原论文实验源码吗？</strong></summary>
 
-公开内容定位为研究工具包，保留实验目标、模块关系、结果与边界，不发布原实验源码。因此安装后不能直接执行 `python` 命令，README 也不会虚构不存在的入口。
+不是。公开文件是根据研究架构独立编写的最小完整性演示，只覆盖哈希链构造和篡改检测。原论文的六个实验模块、依赖、数据与性能测试源码仍未发布，不能用该演示复现 README 中的性能数字。
 </details>
 
 <details>

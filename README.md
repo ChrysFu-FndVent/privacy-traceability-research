@@ -15,14 +15,6 @@
 
 📚 [研究流程](./workflows.md) · 🧪 [实验模块](./skills.md) · 🧠 [科研 Prompt](./prompt-engineering.md) · 🧭 [产品化设计](./product-design.md) · 📏 [数据与限制](./data-analysis.md)
 
-<br>
-
-<img src="./assets/readme-hero.webp" alt="公开溯源链与隐私数据通道通过证明节点连接到验证网关的研究架构概念图" width="760">
-
-<br>
-
-<sub>研究架构概念图：用于解释公开记录、隐私数据与证明节点的关系，不是安全审计结论。</sub>
-
 </div>
 
 > [!WARNING]
@@ -48,24 +40,11 @@
 
 ### 公开验证与隐私数据分层
 
-```mermaid
-flowchart LR
-    subgraph P["隐私侧链 / 受控数据域"]
-        RAW["原始敏感数据"] --> COMMIT["承诺与范围证明材料"]
-        RAW --> POLICY["访问策略与授权记录"]
-    end
+<p align="center">
+  <img src="./assets/readme-architecture.svg" alt="隐私溯源研究中联盟主链、隐私侧链、条件验证网关与验真结论之间关系的双层架构图" width="100%">
+</p>
 
-    subgraph M["联盟主链 / 多方共享域"]
-        STATE["业务状态机"] --> RECORD["批次与流转记录"]
-        SIGN["多方签名"] --> RECORD
-        ROOT["Merkle Root / 哈希锚点"] --> RECORD
-    end
-
-    COMMIT --> VERIFY["不披露原值的条件验证"]
-    VERIFY --> RECORD
-    POLICY -.授权审计.-> VERIFY
-    RECORD --> USER["消费者 / 监管方验真结论"]
-```
+<p align="center"><sub>可编辑版本：<a href="./assets/readme-architecture.drawio">readme-architecture.drawio</a></sub></p>
 
 ### 验真路径
 
@@ -129,7 +108,7 @@ excluded_claims: [生产吞吐, 端到端延迟, 安全审计结论, ROI]
 | 业务约束 | 智能合约状态机、RBAC 权限 |
 | 原型环境 | Python 单机实验（源码未在本仓库发布） |
 | 研究协作 | 文献矩阵、AI 三级信任、反向测试、边界审计 |
-| 文档表达 | Markdown、YAML、Mermaid |
+| 文档表达 | Markdown、YAML、draw.io、SVG、Mermaid |
 
 ## 安装与阅读
 
@@ -153,6 +132,9 @@ cd privacy-traceability-research
 ```text
 privacy-traceability-research/
 ├── README.md              # 研究入口、证据边界与 FAQ
+├── assets/
+│   ├── readme-architecture.drawio  # 可编辑双层架构源文件
+│   └── readme-architecture.svg     # README 矢量展示图
 ├── workflows.md           # 从业务痛点到可验证结论的研究流程
 ├── skills.md              # 六个 Python 实验模块的规格拆解
 ├── prompt-engineering.md  # AI 辅助科研的 Prompt 与信任分级

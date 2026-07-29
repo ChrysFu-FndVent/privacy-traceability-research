@@ -1,3 +1,232 @@
+<div align="right"><a href="#english">English</a> | <a href="#简体中文">简体中文</a></div>
+
+<a id="english"></a>
+
+# Privacy Traceability Research Toolkit
+
+<div align="center">
+
+<strong>🔐 Verify facts without exposing raw values that should remain private</strong>
+
+<br>
+
+`trust model` · `dual-chain architecture` · `privacy proof` · `evidence boundary`
+
+![Type](https://img.shields.io/badge/Type-Research%20Toolkit-1D4ED8?style=flat-square)
+![Prototype](https://img.shields.io/badge/Evidence-Single--Machine%20Prototype-7C3AED?style=flat-square)
+![Security](https://img.shields.io/badge/Security-Not%20Audited-B91C1C?style=flat-square)
+![Disclosure](https://img.shields.io/badge/Disclosure-Boundaries%20Explicit-0F766E?style=flat-square)
+![Language](https://img.shields.io/badge/Language-Python%203-3776AB?style=flat-square&logo=python&logoColor=white)
+
+📚 [Research Workflow](./workflows.md) · 🧪 [Experiment Modules](./skills.md) · 🧠 [Research Prompts](./prompt-engineering.md) · 🧭 [Product Design](./product-design.md) · 📏 [Data and Limitations](./data-analysis.md)
+
+</div>
+
+> [!WARNING]
+> This repository publishes **research methods, experiment-module specifications, and result records**, not a security-audited blockchain or zero-knowledge proof implementation. `src/integrity_demo.py` is an independently written hash-chain integrity reference demo, not the paper's experimental source code. It must not be used in production or to reproduce the paper's performance results.
+
+## Table of Contents
+
+- [Research Overview](#research-overview)
+- [Core Questions](#core-questions)
+- [Architecture Highlights](#architecture-highlights)
+- [Results](#results)
+- [Capabilities and Research Modules](#capabilities-and-research-modules)
+- [Research Technology Stack](#research-technology-stack)
+- [Installation and Deployment](#installation-and-deployment)
+- [Project Structure](#project-structure)
+- [FAQ](#faq)
+- [Evidence and Security Boundaries](#evidence-and-security-boundaries)
+
+## Research Overview
+
+Multi-party traceability must answer two questions at once: how records become mutually trusted across organizations, and how sensitive raw values can be verified without being disclosed. Starting from participants, trust gaps, and disclosure rules, this toolkit designs a consortium main chain and a privacy side chain, then validates key technical primitives with single-machine prototypes of hashes, signatures, Merkle structures, commitments/range proofs, and state machines.
+
+| Research Input | Research Output |
+|---|---|
+| Participants, business states, trust assumptions, sensitive fields, permitted disclosure, and experiment environment | Dual-chain architecture, permissions and state machine, experiment modules, performance records, negative tests, and production gaps |
+
+## Core Questions
+
+- Who may write, endorse, query, and correct records?
+- Which records must be shared across parties, and which raw values must remain private?
+- Does a verifier need the original value, or only proof that it falls within an allowed range?
+- How do business states prevent illegal transitions, unauthorized calls, and history rewriting?
+- Which claims can a single-machine experiment support, and which production conclusions cannot be extrapolated?
+
+## Architecture Highlights
+
+### Separate Public Verification from Private Data
+
+<p align="center">
+  <img src="./assets/readme-architecture.svg" alt="Two-layer architecture connecting the consortium main chain, privacy side chain, conditional verification gateway, and verification conclusions in privacy traceability research" width="100%">
+</p>
+
+<p align="center"><sub>Editable source: <a href="./assets/readme-architecture.drawio">readme-architecture.drawio</a></sub></p>
+
+### Verification Path
+
+```mermaid
+sequenceDiagram
+    participant U as Verifier
+    participant A as Verification API
+    participant M as Consortium main chain
+    participant P as Privacy proof service
+    U->>A: Submit batch or product identifier
+    A->>M: Validate hash, signature, membership, and state
+    M-->>A: Return shared-record validation result
+    A->>P: Verify range proof without requesting the raw value
+    P-->>A: Return true / false and proof status
+    A-->>U: Show an understandable conclusion and anomaly reason
+```
+
+## Results
+
+### Research Task Configuration
+
+```yaml
+scenario: Multi-party production and distribution of customized goods
+participants: [material supplier, producer, quality inspector, logistics provider, seller, user, regulator]
+trust_gaps: [records may be rewritten, records from different parties are difficult to reconcile]
+sensitive_data: [raw user measurement data]
+allowed_disclosure: [whether values are in range, batch state, multi-party endorsement result]
+state_transitions: material -> production -> inspection -> distribution -> sale or recall
+prototype_scope: [hash chain, signatures, Merkle, commitments and range proofs, state machine]
+excluded_claims: [production throughput, end-to-end latency, security audit findings, ROI]
+```
+
+### Publishable Experiment Records
+
+| Data | Evidence-supported Meaning | Unsupported Conclusion |
+|---|---|---|
+| **0.173 ms** | Per-transaction consortium-chain validation time in a Python single-machine simulation | End-to-end latency in a distributed production network |
+| **0.583 ms** | Validation time after adding zero-knowledge proof work in the Python single-machine simulation | Complete scan experience or production throughput |
+| **About RMB 6.2 million / 2–3 years** | Baseline traditional cross-institution reconciliation cost and duration from cited sources | Savings or return on investment from a blockchain solution |
+
+## Capabilities and Research Modules
+
+| Module | Validation Goal | Negative Test |
+|---|---|---|
+| Hash-chain integrity | Detect whether historical records were modified | Alter any record |
+| ECDSA multi-party signatures | Confirm that endorser and content match | Wrong signature or substituted message |
+| Merkle lightweight verification | Confirm that a record belongs to a batch | Forged path or leaf |
+| State-machine simulation | Enforce state transitions and role permissions | Illegal transitions and unauthorized calls |
+| Commitments and range proofs | Verify range conditions without revealing raw values | Invalid proof or out-of-range value |
+| End-to-end benchmark | Record single-machine cost after combining primitives | Different scales and repeated runs |
+
+See [skills.md](./skills.md) for module specifications and [product-design.md](./product-design.md) for the state machine and consumer experience.
+
+## Research Technology Stack
+
+| Area | Research Subject |
+|---|---|
+| Data integrity | Hash chains and Merkle trees |
+| Identity and endorsement | ECDSA digital signatures and multi-party verification |
+| Privacy proofs | Commitments, range proofs, and zero-knowledge concepts |
+| Business constraints | Smart-contract state machines and RBAC permissions |
+| Prototype environment | Python single-machine experiments; source code is not published here |
+| Public reference | Python 3 standard library; canonical JSON, hash-chain construction, and tamper detection |
+| Research collaboration | Literature matrix, three-level AI trust, negative tests, and boundary audits |
+| Documentation | Markdown, YAML, draw.io, SVG, and Mermaid |
+
+## Installation and Deployment
+
+### Install and Run
+
+```bash
+git clone https://github.com/ChrysFu-FndVent/privacy-traceability-research.git
+cd privacy-traceability-research
+```
+
+The documentation has no installation dependencies. The independent reference demo requires Python 3.9 or later and has no third-party dependencies:
+
+```bash
+python3 src/integrity_demo.py
+python3 src/integrity_demo.py --self-test
+```
+
+The demo only shows that hash-chain validation fails after a record is modified. It does not implement signatures, Merkle trees, zero-knowledge proofs, consensus, or networking. Read the research documents by question rather than filename:
+
+1. Formalize trust, integrity, privacy, and efficiency questions with [workflows.md](./workflows.md).
+2. Use [product-design.md](./product-design.md) to inspect the eight-state lifecycle, seven permission classes, and five interfaces.
+3. Map architecture claims to six experiment modules with [skills.md](./skills.md).
+4. Check experiment environment, numeric definitions, and production gaps in [data-analysis.md](./data-analysis.md).
+5. Use [prompt-engineering.md](./prompt-engineering.md) to manage evidence levels in AI-assisted research.
+
+To reproduce the experiments, rebuild the code in an independent environment from the module specifications, pin dependency versions, and add a security review. Do not treat module names in the documents as published script paths.
+
+### Deployment Boundaries
+
+The current repository neither needs nor supports deployment as a blockchain node, verification service, or consumer verification API. `integrity_demo.py` is suitable for local, educational, or CI use to validate one foundational behavior: hash-chain tamper detection.
+
+A production deployment must separately implement membership and key management, signatures, Merkle structures, privacy proofs, consensus, storage, APIs, monitoring, and governance, and complete cryptographic review, threat modeling, and security audits before launch.
+
+## Project Structure
+
+```text
+privacy-traceability-research/
+├── README.md              # Research entry point, evidence boundaries, and FAQ
+├── .gitignore             # Python cache ignore rules
+├── assets/
+│   ├── readme-architecture.drawio  # Editable two-layer architecture source
+│   └── readme-architecture.svg     # README vector diagram
+├── src/
+│   └── integrity_demo.py   # Python hash-chain integrity reference demo
+├── workflows.md           # Research flow from business problem to verifiable conclusion
+├── skills.md              # Specifications for six Python experiment modules
+├── prompt-engineering.md  # Prompts and trust levels for AI-assisted research
+├── product-design.md      # State machine, RBAC, and consumer verification experience
+└── data-analysis.md       # Single-machine benchmarks, problem baselines, and production gaps
+```
+
+## FAQ
+
+<details>
+<summary><strong>Is the published Python file the original paper's experiment source code?</strong></summary>
+
+No. It is an independently written minimum integrity demonstration derived from the research architecture and covers only hash-chain construction and tamper detection. Source code, dependencies, data, and performance tests for the six original experiment modules remain unpublished, so the demo cannot reproduce README performance figures.
+</details>
+
+<details>
+<summary><strong>Do 0.173 ms and 0.583 ms represent online performance?</strong></summary>
+
+No. They apply only to a specified Python single-machine simulation path and exclude network, consensus, storage, node governance, API, and client-rendering time.
+</details>
+
+<details>
+<summary><strong>Will raw sensitive data be placed on-chain?</strong></summary>
+
+The design goal is to keep raw sensitive values out of the publicly shared domain and retain only necessary commitments, proofs, or hash material. A concrete system still requires data minimization, access control, key management, and a privacy impact assessment.
+</details>
+
+<details>
+<summary><strong>Can the cryptographic design here be used directly in production?</strong></summary>
+
+No. A production implementation requires cryptographic expert review, security audits, key-lifecycle design, dependency review, attack testing, and governance.
+</details>
+
+<details>
+<summary><strong>Can the reference demo be deployed as a consumer verification service?</strong></summary>
+
+No. It has no authentication, persistence, network API, multi-party signatures, or privacy-proof capability. It can only construct and inspect an example hash chain in one process. A verification service must be implemented separately and pass security review.
+</details>
+
+## Evidence and Security Boundaries
+
+- Performance figures must record environment, data scale, and execution method.
+- Tampering, invalid signatures, illegal state transitions, and unauthorized calls require negative tests.
+- Paper claims, prototype evidence, and production assumptions must be labeled separately.
+- Raw sensitive values do not enter the shared chain, and public material must not allow them to be inferred.
+- Cost baselines cannot be rewritten directly as solution benefits or ROI.
+
+---
+
+<p align="right"><a href="#english">Back to English</a></p>
+
+---
+
+<a id="简体中文"></a>
+
 # 隐私溯源研究工具包
 
 <div align="center">

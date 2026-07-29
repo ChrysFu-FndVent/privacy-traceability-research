@@ -1,28 +1,79 @@
-# 04 · 隐私溯源研究工具包
+# 隐私溯源研究工具包
 
-<p align="center">
-  <a href="./workflows.md">研究工作流</a> ·
-  <a href="./skills.md">实验模块</a> ·
-  <a href="./prompt-engineering.md">科研 Prompt</a> ·
-  <a href="./product-design.md">产品化设计</a> ·
-  <a href="./data-analysis.md">实验数据</a>
-</p>
-<p align="center"><code>信任与隐私问题</code> → <code>双链架构</code> → <code>单机原型</code> → <code>证据边界</code></p>
+<div align="center">
 
-> 用联盟链、隐私侧链和零知识范围证明拆解多方溯源问题，并通过 Python 单机原型验证关键技术原语。
+`trust model` · `dual-chain architecture` · `privacy proof` · `evidence boundary`
 
-| 解决的问题 | 适用场景 | 输入 | 输出 |
-|---|---|---|---|
-| 多方业务记录难互信，敏感原始数据又不应公开；技术方案容易把单机实验误写成生产性能 | 联盟链预研、隐私保护方案比较、溯源状态机设计、论文或 PoC 验证 | 参与方、业务状态、信任假设、敏感字段、披露规则、实验环境 | 双链架构、权限与状态机、实验模块、性能记录、适用边界 |
+![Type](https://img.shields.io/badge/Type-Research%20Toolkit-1D4ED8?style=flat-square)
+![Prototype](https://img.shields.io/badge/Evidence-Single--Machine%20Prototype-7C3AED?style=flat-square)
+![Security](https://img.shields.io/badge/Security-Not%20Audited-B91C1C?style=flat-square)
+![Disclosure](https://img.shields.io/badge/Disclosure-Boundaries%20Explicit-0F766E?style=flat-square)
 
-## 何时使用
+[研究流程](./workflows.md) · [实验模块](./skills.md) · [科研 Prompt](./prompt-engineering.md) · [产品化设计](./product-design.md) · [数据与限制](./data-analysis.md)
 
-适合在正式系统立项前澄清信任、隐私和验证问题，或用小型原型验证密码学组件之间的关系。它不能直接回答生产部署的吞吐、延迟、治理成本或安全性结论。
+</div>
 
-> [!CAUTION]
-> 本工具包用于方案预研和原语验证，不是经过安全审计的生产实现。密码学代码、密钥管理和治理机制必须由专业团队复核。
+> [!WARNING]
+> 本仓库发布的是**研究方法、实验模块规格和结果记录**，不是经过安全审计的区块链或零知识证明实现。仓库不包含论文实验的 Python 源码，不能直接运行或用于生产。
 
-## 快速启动
+## 研究简介
+
+多方溯源需要同时回答两类问题：记录怎样跨主体互信，敏感原始值怎样在不公开的前提下被验证。本工具包从参与方、信任缺口和披露规则出发，设计联盟主链与隐私侧链，再用哈希、签名、Merkle、承诺/范围证明和状态机的单机原型验证关键技术原语。
+
+| 研究输入 | 研究输出 |
+|---|---|
+| 参与方、业务状态、信任假设、敏感字段、允许披露内容、实验环境 | 双链架构、权限与状态机、实验模块、性能记录、反向测试和生产差距 |
+
+## 核心问题
+
+- 谁可以写入、背书、查询和纠错？
+- 哪些记录需要多方共享，哪些原始值不能公开？
+- 验证者需要知道原值，还是只需知道“值在允许区间内”？
+- 业务状态如何防止非法跳转、越权调用和历史改写？
+- 单机实验能够支撑哪些主张，不能外推哪些生产结论？
+
+## 架构亮点
+
+### 公开验证与隐私数据分层
+
+```mermaid
+flowchart LR
+    subgraph P["隐私侧链 / 受控数据域"]
+        RAW["原始敏感数据"] --> COMMIT["承诺与范围证明材料"]
+        RAW --> POLICY["访问策略与授权记录"]
+    end
+
+    subgraph M["联盟主链 / 多方共享域"]
+        STATE["业务状态机"] --> RECORD["批次与流转记录"]
+        SIGN["多方签名"] --> RECORD
+        ROOT["Merkle Root / 哈希锚点"] --> RECORD
+    end
+
+    COMMIT --> VERIFY["不披露原值的条件验证"]
+    VERIFY --> RECORD
+    POLICY -.授权审计.-> VERIFY
+    RECORD --> USER["消费者 / 监管方验真结论"]
+```
+
+### 验真路径
+
+```mermaid
+sequenceDiagram
+    participant U as 验证者
+    participant A as 验真接口
+    participant M as 联盟主链
+    participant P as 隐私证明服务
+    U->>A: 提交批次或商品标识
+    A->>M: 校验哈希、签名、成员关系与状态
+    M-->>A: 返回共享记录验证结果
+    A->>P: 验证范围证明（不请求原值）
+    P-->>A: 返回 true / false 与证明状态
+    A-->>U: 展示可理解的验真结论与异常原因
+```
+
+## 效果展示
+
+### 研究任务配置
 
 ```yaml
 scenario: 多方参与的定制商品生产与流转
@@ -30,63 +81,111 @@ participants: [原料方, 生产方, 质检方, 物流方, 销售方, 用户, �
 trust_gaps: [记录可能被改写, 多方记录难互认]
 sensitive_data: [用户原始测量数据]
 allowed_disclosure: [是否在允许区间, 批次状态, 多方背书结果]
-state_transitions: 原料 -> 生产 -> 质检 -> 流转 -> 销售/召回
-prototype_scope: 哈希链、签名、Merkle、承诺与范围证明、状态机
+state_transitions: 原料 -> 生产 -> 质检 -> 流转 -> 销售或召回
+prototype_scope: [哈希链, 签名, Merkle, 承诺与范围证明, 状态机]
 excluded_claims: [生产吞吐, 端到端延迟, 安全审计结论, ROI]
 ```
 
-先定义谁不信任谁、哪些值不能公开、需要证明什么，再决定是否需要链或零知识机制。
+### 可公开实验记录
 
-## 使用路径
-
-```mermaid
-flowchart LR
-    A[列出参与方与信任问题] --> B[区分公开与敏感数据]
-    B --> C[设计主链与隐私侧链]
-    C --> D[定义状态机与权限]
-    D --> E[实现 Python 单机原型]
-    E --> F[基准、篡改与非法跳转测试]
-    F --> G[记录结论与生产差距]
-```
-
-最短使用顺序：
-
-1. 按 [workflows.md](./workflows.md) 将业务问题形式化为完整性、信任、效率和隐私问题。
-2. 用 [product-design.md](./product-design.md) 定义 8 状态流程、7 类权限和 5 个核心接口。
-3. 从 [skills.md](./skills.md) 选择哈希链、签名、Merkle、承诺/证明或状态机模块进行实验。
-4. 用 [data-analysis.md](./data-analysis.md) 记录环境、指标和限制；AI 辅助过程遵守 [prompt-engineering.md](./prompt-engineering.md) 的信任分级。
-
-## 可复用资产
-
-| 资产 | 可直接复用的内容 |
-|---|---|
-| [研究工作流](./workflows.md) | 问题形式化、架构、原型、实验与边界评估 |
-| [实验框架](./skills.md) | 六个 Python 实验模块及各自验证目标 |
-| [科研 Prompt](./prompt-engineering.md) | 文献矩阵、代码骨架、论证审计和表达检查 |
-| [产品化设计](./product-design.md) | 状态机、RBAC 权限、接口和消费者验真体验 |
-| [数据分析](./data-analysis.md) | 性能基准、传统流程问题基线和生产差距 |
-
-## 验证记录
-
-| 数据 | 正确含义 | 不能推导的结论 |
+| 数据 | 证据支持的含义 | 不能推导的结论 |
 |---|---|---|
-| **0.173ms** | 联盟链单笔交易验证耗时，Python 单机模拟 | 分布式生产网络端到端延迟 |
-| **0.583ms** | 加入零知识证明后的验证耗时，Python 单机模拟 | 完整扫码体验或生产吞吐 |
+| **0.173 ms** | Python 单机模拟中的联盟链单笔交易验证耗时 | 分布式生产网络端到端延迟 |
+| **0.583 ms** | Python 单机模拟中加入零知识证明后的验证耗时 | 完整扫码体验或生产吞吐 |
 | **约 620 万元 / 2–3 年** | 引用资料中的传统跨机构对账成本与周期基线 | 区块链方案节省额或投资回收期 |
 
-## 验收要点
+## 功能与研究模块
 
-- 所有性能数字同时记录硬件、软件、数据规模和运行方式。
-- 篡改、错误签名、非法状态跳转和越权调用都有反向测试。
-- 原始敏感值不上链，公开验证材料不应反推出原值。
-- 论文主张、原型证据和生产假设分别标注。
+| 模块 | 验证目标 | 反向测试 |
+|---|---|---|
+| 哈希链完整性 | 历史记录修改是否可被发现 | 篡改任意记录 |
+| ECDSA 多方签名 | 背书主体与内容是否一致 | 错误签名、替换消息 |
+| Merkle 轻验证 | 单条记录是否属于某批次 | 伪造路径或叶子 |
+| 状态机模拟 | 状态转换与角色权限是否有效 | 非法跳转、越权调用 |
+| 承诺与范围证明 | 不公开原值时验证区间条件 | 错误证明、越界值 |
+| 端到端基准 | 记录组合原语后的单机耗时 | 不同规模与重复运行 |
 
-## 边界
+模块规格见 [skills.md](./skills.md)，状态机和消费者体验见 [product-design.md](./product-design.md)。
 
-- 单机原型只验证技术原语和方案逻辑，不代表生产级安全审计。
-- 密码学核心实现必须对照原始论文与安全假设复核，不能依赖 AI 自动生成结果。
-- ROI 需要节点建设、治理、托管、集成和运维的完整成本模型，本资产不提供该结论。
+## 研究技术栈
+
+| 领域 | 研究对象 |
+|---|---|
+| 数据完整性 | Hash chain、Merkle tree |
+| 身份与背书 | ECDSA 数字签名、多方验证 |
+| 隐私证明 | Commitment、范围证明、零知识思想 |
+| 业务约束 | 智能合约状态机、RBAC 权限 |
+| 原型环境 | Python 单机实验（源码未在本仓库发布） |
+| 研究协作 | 文献矩阵、AI 三级信任、反向测试、边界审计 |
+| 文档表达 | Markdown、YAML、Mermaid |
+
+## 安装与阅读
+
+```bash
+git clone https://github.com/ChrysFu-FndVent/privacy-traceability-research.git
+cd privacy-traceability-research
+```
+
+本仓库无需安装依赖，推荐按研究问题而非文件名顺序阅读：
+
+1. 从 [workflows.md](./workflows.md) 形式化信任、完整性、隐私和效率问题。
+2. 用 [product-design.md](./product-design.md) 查看 8 状态生命周期、7 类权限和 5 个接口。
+3. 按 [skills.md](./skills.md) 将架构主张映射到六类实验模块。
+4. 用 [data-analysis.md](./data-analysis.md) 检查实验环境、数字口径和生产差距。
+5. 参考 [prompt-engineering.md](./prompt-engineering.md) 管理 AI 辅助科研的证据等级。
+
+如需复现实验，应根据模块规格在独立环境重建代码、固定依赖版本并补充安全评审；不要把文档中的模块名当成已发布脚本路径。
+
+## 项目结构
+
+```text
+privacy-traceability-research/
+├── README.md              # 研究入口、证据边界与 FAQ
+├── workflows.md           # 从业务痛点到可验证结论的研究流程
+├── skills.md              # 六个 Python 实验模块的规格拆解
+├── prompt-engineering.md  # AI 辅助科研的 Prompt 与信任分级
+├── product-design.md      # 状态机、RBAC 与消费者验真体验
+└── data-analysis.md       # 单机基准、问题基线与生产差距
+```
+
+## FAQ
+
+<details>
+<summary><strong>为什么仓库里没有 <code>.py</code> 文件？</strong></summary>
+
+公开内容定位为研究工具包，保留实验目标、模块关系、结果与边界，不发布原实验源码。因此安装后不能直接执行 `python` 命令，README 也不会虚构不存在的入口。
+</details>
+
+<details>
+<summary><strong>0.173 ms 和 0.583 ms 能代表线上性能吗？</strong></summary>
+
+不能。它们只属于指定 Python 单机模拟路径，未包含网络、共识、存储、节点治理、接口和终端渲染时间。
+</details>
+
+<details>
+<summary><strong>原始敏感数据会上链吗？</strong></summary>
+
+设计目标是不让原始敏感值进入公开共享域，只保存必要的承诺、证明或哈希材料。具体系统仍需做数据最小化、访问控制、密钥管理和隐私影响评估。
+</details>
+
+<details>
+<summary><strong>可以将这里的密码学方案直接投入生产吗？</strong></summary>
+
+不可以。生产实现需要密码学专家复核、安全审计、密钥生命周期设计、依赖审查、攻击测试和治理方案。
+</details>
+
+## 证据与安全边界
+
+- 性能数字必须同时记录环境、数据规模和运行方式。
+- 篡改、错误签名、非法状态跳转和越权调用必须有反向测试。
+- 论文主张、原型证据和生产假设必须分别标注。
+- 原始敏感值不上共享链，公开材料不得反推出原值。
+- 成本基线不能直接转写为方案收益或 ROI。
 
 ---
 
-[查看 GitHub 账号中的其他独立项目](https://github.com/ChrysFu-FndVent?tab=repositories)
+<div align="center">
+
+[浏览其他独立 AI 产品项目](https://github.com/ChrysFu-FndVent?tab=repositories)
+
+</div>

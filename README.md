@@ -7,6 +7,8 @@
 <img alt="Python" src="https://img.shields.io/badge/Reference-Python%20standard%20library-3776AB?style=flat-square&logo=python&logoColor=white">
 <img alt="Focus" src="https://img.shields.io/badge/Focus-Integrity%20research-0F766E?style=flat-square">
 <img alt="Scope" src="https://img.shields.io/badge/Scope-Not%20a%20production%20prototype-52525B?style=flat-square">
+<p><a href="workflows.md">🧭 Research flow</a> · <a href="skills.md">🧩 Experiment modules</a> · <a href="prompt-engineering.md">💬 Prompt practice</a> · <a href="data-analysis.md">📊 Analysis</a></p>
+<img src="assets/readme-architecture.svg" alt="Privacy traceability research workflow diagram" width="100%">
 </div>
 
 <a id="简体中文"></a>
